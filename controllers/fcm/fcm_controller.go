@@ -7,8 +7,12 @@ import(
 )
 
 func GetFcm(c echo.Context) error{
-	result := models.GetAllFcm
-	return c.Render(http.StatusOK, "list data", result)
+	result := models.GetAllFcm()
+	var jsonResult map[string]interface{}
+	jsonResult = make(map[string]interface{})
+	jsonResult["status"] = "Sukses"
+	jsonResult["result"] = result
+	return c.JSON(http.StatusOK, jsonResult)
 }
 
 func CheckFcm(c echo.Context) error{

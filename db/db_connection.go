@@ -1,16 +1,15 @@
 package db
 
 import (
-	"database/sql"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"fmt"
+	_"github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 )
 
-func CreateCon() *sql.DB {
-	db, err := gorm.Open("mysql", "custinfo:custinfodev@(10.16.5.162:3306)/custinfo")
+func CreateCon() *sqlx.DB {
+	db, err := sqlx.Open("mysql", "custinfo:custinfodev@(10.16.5.162:3306)/custinfo")
 	if err != nil {
-		panic("failed to connect database")
+		fmt.Println(err.Error())
 	}
-	defer db.Close()
-	//return db
+	return db
 }

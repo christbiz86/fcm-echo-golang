@@ -1,27 +1,33 @@
 package models
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
-	//"fcm-golang/db"
+	"log"
+	"fcm-golang/db"
 )
 
 type Gcms struct {
-	gorm.Model
-	Mdn  string
+	Mdn  string `db:"MDN"`
 	Reg_id string
 	Device_model  string
-	First_login time.Time
-	Last_login time.Time
+	First_login string
+	Last_login string
 }
 
-var gcms Gcms
+var gcmsList []Gcms
 
-func GetAllFcm(){
-	db, err := gorm.Open("mysql", "custinfo:custinfodev@(10.16.5.162:3306)/custinfo")
+func GetAllFcm() []Gcms{
+	gcms := Gcms{}
+	db := db.CreateCon()
+	rows, err := db.Queryx("select * from gcms")
 	if err != nil {
-		panic("failed to connect database")
+		log.Printf("%v\n", err)
 	}
-	defer db.Close()
-	db.Find(&gcms)
+	for rows.Next() {
+		err := rows.StructScan(&gcms)
+		if err != nil {
+			log.Printf("%v\n", err)
+		}
+		gcmsList = append(gcmsList, gcms)
+	}
+	return gcmsList
 }
