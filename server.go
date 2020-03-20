@@ -1,14 +1,15 @@
 package main
 
 import (
-	"net/http"
 	"github.com/labstack/echo"
+	//"fcm-golang/db"
+	"fcm-golang/controllers/fcm"
 )
 
 func main() {
 	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+	//db.CreateCon()
+	e.GET("/fcm",controllers.GetFcm)
+	e.POST("/fcm",controllers.CheckFcm)
 	e.Logger.Fatal(e.Start(":1323"))
 }
