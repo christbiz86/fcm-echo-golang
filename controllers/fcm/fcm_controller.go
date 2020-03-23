@@ -6,22 +6,31 @@ import(
 	"fcm-golang/models/fcm"
 )
 
+type test_struct struct {
+	Mdn  string `db:"MDN"`
+	Reg_id string `json:"reg_id" form:"reg_id" query:"reg_id"`
+	Device_model  string `json:"device_model" form:"device_model" query:"device_model"`
+	First_login string `json:"first_login" form:"first_login" query:"first_login"`
+	Last_login string `json:"last_login" form:"last_login" query:"last_login"`
+}
+
 func GetFcm(c echo.Context) error{
 	result := models.GetAllFcm()
 	var jsonResult map[string]interface{}
 	jsonResult = make(map[string]interface{})
-	jsonResult["status"] = "Sukses"
+	jsonResult["status"] = "1"
+	jsonResult["message"] = "Success"
 	jsonResult["result"] = result
 	return c.JSON(http.StatusOK, jsonResult)
 }
 
-func CheckFcm(c echo.Context) error{
-	return c.String(http.StatusOK, "Hello, post FCM!")
+func RegisterFcm(c echo.Context) error{
+	result := models.RegisterFcm(c)
+	if err := c.Bind(result); err != nil {
+		return err
+	}
+	return c.JSON(http.StatusCreated, result)
 }
-
-//func RegisterFcm() error{
-//
-//}
 //
 //func UpdateFcm() error{
 //
