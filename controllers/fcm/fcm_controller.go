@@ -26,7 +26,7 @@ func RegisterFcm(c echo.Context) error{
 	//sqlStatement := "INSERT INTO gcms (mdn, reg_id,device_model)VALUES (?, ?, ?)"
 	//res, err := db.Queryx(sqlStatement, u.Mdn, u.Reg_id, u.Device_model)
 
-	result := models.RegisterFcm(c)
+	var result = models.RegisterFcm(c)
 	if result != nil {
 		fmt.Println(result)
 	} else {
