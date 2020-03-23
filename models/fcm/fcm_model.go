@@ -1,7 +1,8 @@
 package models
 
 import (
-	//"github.com/labstack/echo"
+	"github.com/jmoiron/sqlx"
+	"github.com/labstack/echo"
 	"log"
 	"fcm-golang/db"
 )
@@ -14,10 +15,9 @@ type Gcms struct {
 	Last_login string `json:"last_login" form:"last_login" query:"last_login"`
 }
 
-var gcmsList []Gcms
-var gcms Gcms
-
 func GetAllFcm() []Gcms{
+	var gcmsList []Gcms
+	var gcms Gcms
 	db := db.CreateCon()
 	rows, err := db.Queryx("select * from gcms")
 	if err != nil {
@@ -31,6 +31,25 @@ func GetAllFcm() []Gcms{
 		gcmsList = append(gcmsList, gcms)
 	}
 	return gcmsList
+}
+
+func RegisterFcm(c echo.Context) *sqlx.Rows {
+	u := new(Gcms)
+	if err := c.Bind(u); err != nil {
+		return nil
+	}
+	db:= db.CreateCon()
+	sqlStatement := "INSERT INTO gcms (mdn, reg_id,device_model)VALUES (?, ?, ?)"
+	res, _ := db.Queryx(sqlStatement, u.Mdn, u.Reg_id, u.Device_model)
+
+	return res
+	//if err != nil {
+	//	fmt.Println(err)
+	//} else {
+	//	fmt.Println(res)
+	//	return c.JSON(http.StatusCreated, u)
+	//}
+	//return c.String(http.StatusOK, "ok")
 }
 
 //func RegisterFcm(c echo.Context) *Gcms {
