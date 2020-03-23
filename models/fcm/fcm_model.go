@@ -34,26 +34,6 @@ func GetAllFcm() []Gcms{
 	return gcmsList
 }
 
-func RegisterFcm(c echo.Context) *sqlx.Rows {
-	log.Println()
-	u := new(Gcms)
-	if err := c.Bind(u); err != nil {
-		return nil
-	}
-	db:= db.CreateCon()
-	sqlStatement := "INSERT INTO gcms (mdn, reg_id,device_model)VALUES (?, ?, ?)"
-	res, err := db.Queryx(sqlStatement, u.Mdn, u.Reg_id, u.Device_model)
-
-	if err != nil {
-		fmt.Println("no error")
-	} else {
-		fmt.Println("err")
-		//return c.JSON(http.StatusCreated, u)
-	}
-	return res
-
-	//return c.String(http.StatusOK, "ok")
-}
 
 //func RegisterFcm(c echo.Context) *Gcms {
 //	db := db.CreateCon()
