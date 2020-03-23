@@ -1,8 +1,8 @@
 package models
 
 import (
+	sql "database/sql"
 	"fcm-golang/db"
-	"fmt"
 	"log"
 	"github.com/labstack/echo"
 	"time"
@@ -44,11 +44,12 @@ func RegisterFcm(c echo.Context) *Gcms {
 	}
 	db := db.CreateCon()
 	sqlStatement1 := "SELECT mdn FROM gcms where mdn = ?"
-	_, check := db.Queryx(sqlStatement1, u.Mdn)
-	if check != nil {
-		UpdateGcm(u)
-	} else {
-		InsetNewGcm(u)
+	row := db.QueryRow(sqlStatement1, u.Mdn)
+	switch err := row.Scan(&u.Mdn); err {
+		case sql.ErrNoRows:
+			InsetNewGcm(u)
+		case nil:
+			UpdateGcm(u)
 	}
 	return u
 }
@@ -56,21 +57,11 @@ func RegisterFcm(c echo.Context) *Gcms {
 func InsetNewGcm(u *Gcms) {
 	db := db.CreateCon()
 	sqlStatement := "INSERT INTO gcms (mdn, reg_id,device_model,first_login)VALUES (?, ?, ?, ?)"
-	_, err := db.Queryx(sqlStatement, u.Mdn, u.Reg_id, u.Device_model, currentTime.Format("2006-01-02 15:04:05"))
-	if err != nil {
-		fmt.Println("no error")
-	} else {
-		fmt.Println("err")
-	}
+	db.Queryx(sqlStatement, u.Mdn, u.Reg_id, u.Device_model, currentTime.Format("2006-01-02 15:04:05"))
 }
 
 func UpdateGcm(u *Gcms){
 	db := db.CreateCon()
-	sqlStatement := "UPDATE gcms set reg_id=?, device_model=?, last_login=? where mdn=?"
-	_, err := db.Queryx(sqlStatement, u.Reg_id, u.Device_model, currentTime.Format("2006-01-02 15:04:05"),u.Mdn)
-	if err != nil {
-		fmt.Println("no error")
-	} else {
-		fmt.Println("err")
-	}
+	sqlStatement := "UPDATE gcms set reg_id=?, device_model=?, last_login=? where MDN=?"
+	db.Queryx(sqlStatement, u.Reg_id, u.Device_model, currentTime.Format("2006-01-02 15:04:05"),u.Mdn)
 }
