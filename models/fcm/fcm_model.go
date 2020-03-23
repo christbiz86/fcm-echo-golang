@@ -1,22 +1,23 @@
 package models
 
 import (
+	"fcm-golang/db"
 	"fmt"
+	"log"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
-	"log"
-	"fcm-golang/db"
 )
 
 type Gcms struct {
-	Mdn  string `db:"MDN"`
-	Reg_id string `json:"reg_id" form:"reg_id" query:"reg_id"`
-	Device_model  string `json:"device_model" form:"device_model" query:"device_model"`
-	First_login string `json:"first_login" form:"first_login" query:"first_login"`
-	Last_login string `json:"last_login" form:"last_login" query:"last_login"`
+	Mdn          string `db:"MDN"`
+	Reg_id       string `json:"reg_id" form:"reg_id" query:"reg_id"`
+	Device_model string `json:"device_model" form:"device_model" query:"device_model"`
+	First_login  string `json:"first_login" form:"first_login" query:"first_login"`
+	Last_login   string `json:"last_login" form:"last_login" query:"last_login"`
 }
 
-func GetAllFcm() []Gcms{
+func GetAllFcm() []Gcms {
 	var gcmsList []Gcms
 	var gcms Gcms
 	db := db.CreateCon()
@@ -35,13 +36,18 @@ func GetAllFcm() []Gcms{
 }
 
 func RegisterFcm(c echo.Context) *sqlx.Rows {
-	log.Println()
 	u := new(Gcms)
 	if err := c.Bind(u); err != nil {
+		log.Println(err)
 		return nil
 	}
-	db:= db.CreateCon()
+	db := db.CreateCon()
 	sqlStatement := "INSERT INTO gcms (mdn, reg_id,device_model)VALUES (?, ?, ?)"
+	log.Println("test")
+	log.Println(u.Mdn)
+	log.Println(u.Reg_id)
+	log.Println(u.Device_model)
+	log.Println("test")
 	res, err := db.Queryx(sqlStatement, u.Mdn, u.Reg_id, u.Device_model)
 
 	if err != nil {
@@ -75,8 +81,7 @@ func RegisterFcm(c echo.Context) *sqlx.Rows {
 //}
 
 //func InsertFcm() string{
-	//db := db.CreateCon()
-	//insertGcm := `INSERT INTO gcms (MDN, reg_id,device_model) VALUES (?, ?, ?)`
-	//db.MustExec(insertGcm, "6288123214124","reg id sample","device model sample")
+//db := db.CreateCon()
+//insertGcm := `INSERT INTO gcms (MDN, reg_id,device_model) VALUES (?, ?, ?)`
+//db.MustExec(insertGcm, "6288123214124","reg id sample","device model sample")
 //}
-
