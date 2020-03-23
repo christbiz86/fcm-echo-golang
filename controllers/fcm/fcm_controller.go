@@ -24,13 +24,10 @@ func GetFcm(c echo.Context) error{
 	return c.JSON(http.StatusOK, jsonResult)
 }
 
-func RegisterFcm(c echo.Context) error{
-	result := models.RegisterFcm(c)
-	if err := c.Bind(result); err != nil {
-		return err
-	}
-	return c.JSON(http.StatusCreated, result)
-}
+//func RegisterFcm(c echo.Context) error{
+//	result := models.RegisterFcm(c)
+//	return c.JSON(http.StatusCreated, result)
+//}
 //
 //func UpdateFcm() error{
 //
