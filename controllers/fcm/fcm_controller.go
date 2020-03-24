@@ -30,6 +30,20 @@ func RegisterFcm(c echo.Context) error {
 	}
 }
 
+//func DeleteFcm(c echo.Context) error{
+//	mdn := c.Param("mdn")
+//	sqlStatement := "DELETE FROM employees WHERE MDN = ?"
+//	res, err := db.Query(sqlStatement, mdn)
+//	if err != nil {
+//		fmt.Println(err)
+//		//return c.JSON(http.StatusCreated, u);
+//	} else {
+//		fmt.Println(res)
+//		return c.JSON(http.StatusOK, "Deleted")
+//	}
+//	return c.String(http.StatusOK, id+"Deleted")
+//}
+
 //
 //func UpdateFcm() error{
 //

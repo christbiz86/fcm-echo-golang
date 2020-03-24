@@ -9,6 +9,7 @@ func main() {
 	e := echo.New()
 	e.GET("/fcm",controllers.GetFcm)
 	e.POST("/fcm", controllers.RegisterFcm)
+	e.DELETE("/fcm/:mdn", controllers.DeleteFcm)
 	//e.POST("/test",controllers.Test)
 	//e.POST("/fcm", func(c echo.Context) (err error) {
 	//	m := echo.Map{}
