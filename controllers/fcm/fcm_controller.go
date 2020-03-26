@@ -2,9 +2,10 @@ package controllers
 
 import (
 	models "fcm-golang/models/fcm"
-	"net/http"
 	"github.com/labstack/echo"
+	"net/http"
 )
+
 
 func GetFcm(c echo.Context) error {
 	result := models.GetAllFcm()

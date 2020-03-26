@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/go-session/session"
 	"log"
 	"net/http"
 )
@@ -21,10 +22,15 @@ func SessionMiddleware(next http.Handler) http.Handler{
 		decoder := json.NewDecoder(r.Body)
 		decoder.Decode(&session_id)
 		getMdn := GetSession(session_id.Session_id)
-		log.Println("cek mdn :")
-		log.Println(getMdn["MDN"])
-		ctx := context.WithValue(r.Context(), "session", getMdn)
-		next.ServeHTTP(w, r.WithContext(ctx))
+		q := getMdn.(map[string]interface{})
+		if q["MDN"] != nil{
+			ctx := context.WithValue(r.Context(), "sessionMdn", q["MDN"])
+			next.ServeHTTP(w, r.WithContext(ctx))
+			// save to session
+			store, _ := session.Start(context.Background(), w, r)
+			store.Set("foo", q["MDN"])
+			store.Save()
+		}
 	})
 }
 
@@ -39,7 +45,6 @@ func Sfpas(sfpasUrl string, sessionData map[string]string, email string, passwd 
 	json.NewEncoder(b).Encode(postData)
 	res, _ := http.Post(sfpasUrl, "application/json; charset=utf-8", b)
 	json.NewDecoder(res.Body).Decode(&responseData)
-	log.Println(responseData)
 	return responseData
 }
 
@@ -47,8 +52,6 @@ func GetSession(sessionId string) interface{} {
 	data := make(map[string]string)
 	data["session_id"] = sessionId
 	response := Sfpas(hosts, data, "", "")
-	log.Println("tes resulr middleware")
-	log.Println(response["error"])
 	if(response["error"].(float64) >= 400){
 		return nil
 	} else {
