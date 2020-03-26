@@ -21,6 +21,8 @@ func SessionMiddleware(next http.Handler) http.Handler{
 		decoder := json.NewDecoder(r.Body)
 		decoder.Decode(&session_id)
 		getMdn := GetSession(session_id.Session_id)
+		log.Println("cek mdn :")
+		log.Println(getMdn["MDN"])
 		ctx := context.WithValue(r.Context(), "session", getMdn)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
