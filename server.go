@@ -2,14 +2,16 @@ package main
 
 import (
 	controllers "fcm-golang/controllers/fcm"
+	"fcm-golang/middlewares"
 	"github.com/labstack/echo"
 )
 
 func main() {
 	e := echo.New()
+	e.Use(echo.WrapMiddleware(middlewares.SessionMiddleware))
 	e.GET("/fcm",controllers.GetFcm)
 	e.POST("/fcm", controllers.RegisterFcm)
-	e.DELETE("/fcm/:mdn", controllers.DeleteFcm)
+	//e.DELETE("/fcm/:mdn", controllers.DeleteFcm)
 	//e.POST("/test",controllers.Test)
 	//e.POST("/fcm", func(c echo.Context) (err error) {
 	//	m := echo.Map{}
