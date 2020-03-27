@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"github.com/go-session/session"
-	"log"
+	"fcm-golang/services"
+	"time"
 	"net/http"
+	"github.com/dgrijalva/jwt-go"
 )
 
 var hosts = "http://10.1.35.36:8353/sfpas/session/validate"
@@ -14,6 +15,11 @@ var responseData map[string]interface{}
 
 type Session struct {
 	Session_id string `json:session_id`
+}
+
+type jwtCustomClaims struct {
+	SessionMdn  string `json:"sessionMdn"`
+	jwt.StandardClaims
 }
 
 func SessionMiddleware(next http.Handler) http.Handler{
@@ -26,10 +32,24 @@ func SessionMiddleware(next http.Handler) http.Handler{
 		if q["MDN"] != nil{
 			ctx := context.WithValue(r.Context(), "sessionMdn", q["MDN"])
 			next.ServeHTTP(w, r.WithContext(ctx))
+
+			claims := &jwtCustomClaims{
+				q["MDN"].(string),
+				jwt.StandardClaims{
+					ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
+				},
+			}
+
+			// Create token with claims
+			token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+			// Generate encoded token and send it as response.
+			token.SignedString([]byte(services.GoDotEnvVariable("JWT_KEY")))
+			
 			// save to session
-			store, _ := session.Start(context.Background(), w, r)
-			store.Set("foo", q["MDN"])
-			store.Save()
+			//store, _ := session.Start(context.Background(), w, r)
+			//store.Set("foo", q["MDN"])
+			//store.Save()
 		}
 	})
 }
