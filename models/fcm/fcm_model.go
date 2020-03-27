@@ -3,8 +3,8 @@ package models
 import (
 	sql "database/sql"
 	"fcm-golang/db"
-	"log"
 	"github.com/labstack/echo"
+	"log"
 	"time"
 )
 
@@ -39,7 +39,6 @@ func GetAllFcm() []Gcms {
 func RegisterFcm(c echo.Context) *Gcms {
 	u := new(Gcms)
 	if err := c.Bind(u); err != nil {
-		log.Println(err)
 		return nil
 	}
 	db := db.CreateCon()

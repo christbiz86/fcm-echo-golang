@@ -3,24 +3,16 @@ package controllers
 import (
 	models "fcm-golang/models/fcm"
 	"github.com/labstack/echo"
-	"log"
 	"net/http"
-	"github.com/dgrijalva/jwt-go"
 )
 
-type jwtCustomClaims struct {
-	SessionMdn  string `json:"sessionMdn"`
-	jwt.StandardClaims
-}
+//func GetFcm(echo.Context) http.Handler {
+//	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//
+//	})
+//}
 
 func GetFcm(c echo.Context) error {
-	log.Println("testing")
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(*jwtCustomClaims)
-	mdn := claims.SessionMdn
-	//mdn := c.Get("sessionMdn").(*jwt.Token)
-	log.Println("test MDN JWT")
-	log.Println(mdn)
 	result := models.GetAllFcm()
 	var jsonResult map[string]interface{}
 	jsonResult = make(map[string]interface{})
