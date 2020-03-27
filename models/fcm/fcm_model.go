@@ -5,6 +5,7 @@ import (
 	"fcm-golang/db"
 	"github.com/labstack/echo"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -17,6 +18,11 @@ type Gcms struct {
 }
 
 var currentTime = time.Now()
+
+func GetMdnCookie(r *http.Request) string {
+	c, _ := r.Cookie("CookieData")
+	return c.Value
+}
 
 func GetAllFcm() []Gcms {
 	var gcmsList []Gcms
@@ -37,13 +43,16 @@ func GetAllFcm() []Gcms {
 }
 
 func RegisterFcm(c echo.Context) *Gcms {
+	mdn := GetMdnCookie(c.Request())
+
 	u := new(Gcms)
 	if err := c.Bind(u); err != nil {
 		return nil
 	}
 	db := db.CreateCon()
 	sqlStatement1 := "SELECT mdn FROM gcms where mdn = ?"
-	row := db.QueryRow(sqlStatement1, u.Mdn)
+	//row := db.QueryRow(sqlStatement1, u.Mdn)
+	row := db.QueryRow(sqlStatement1, mdn)
 	switch err := row.Scan(&u.Mdn); err {
 		case sql.ErrNoRows:
 			InsetNewGcm(u)

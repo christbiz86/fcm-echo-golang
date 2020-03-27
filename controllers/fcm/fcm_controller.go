@@ -6,12 +6,6 @@ import (
 	"net/http"
 )
 
-//func GetFcm(echo.Context) http.Handler {
-//	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-//
-//	})
-//}
-
 func GetFcm(c echo.Context) error {
 	result := models.GetAllFcm()
 	var jsonResult map[string]interface{}

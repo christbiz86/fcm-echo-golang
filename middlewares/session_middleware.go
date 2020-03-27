@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 var hosts = "http://10.1.35.36:8353/sfpas/session/validate"
@@ -25,6 +26,12 @@ func SessionMiddleware(next http.Handler) http.Handler{
 			ctx := context.WithValue(r.Context(), "sessionMdn", q["MDN"])
 			next.ServeHTTP(w, r.WithContext(ctx))
 
+			c := http.Cookie{
+				Name:   "CookieData",
+				Value:  q["MDN"].(string),
+				Expires: time.Now().Add(5 * time.Minute),
+			}
+			http.SetCookie(w, &c)
 		} else {
 			http.Error(w, "Failed get MDN!!!", http.StatusUnauthorized)
 		}
