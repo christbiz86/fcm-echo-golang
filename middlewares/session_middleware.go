@@ -12,15 +12,15 @@ var hosts = "http://10.1.35.36:8353/sfpas/session/validate"
 var responseData map[string]interface{}
 
 type Session struct {
-	Session_id string `json:session_id`
+	SessionId string `json:session_id`
 }
 
 func SessionMiddleware(next http.Handler) http.Handler{
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var session_id Session
-		decoder := json.NewDecoder(r.Body)
-		decoder.Decode(&session_id)
-		getMdn := GetSession(session_id.Session_id)
+		var SessionId Session
+		var decoder = json.NewDecoder(r.Body)
+		decoder.Decode(&SessionId)
+		getMdn := GetSession(SessionId.SessionId)
 		if getMdn != nil {
 			q := getMdn.(map[string]interface{})
 			ctx := context.WithValue(r.Context(), "sessionMdn", q["MDN"])
@@ -53,7 +53,7 @@ func SessionMiddleware(next http.Handler) http.Handler{
 func Sfpas(sfpasUrl string, sessionData map[string]string, email string, passwd string) map[string]interface{} {
 	postData := make(map[string]map[string]string)
 	postData["session"] = sessionData
-	if(email != "" && passwd != ""){
+	if email != "" && passwd != "" {
 		postData["collection"]["id"] = email
 		postData["collection"]["token"] = passwd
 	}
@@ -72,7 +72,7 @@ func GetSession(sessionId string) interface{} {
 	data["session_id"] = sessionId
 	response := Sfpas(hosts, data, "", "")
 	if response != nil {
-		if(response["error"].(float64) >= 400){
+		if response["error"].(float64) >= 400 {
 			return nil
 		} else {
 			return response["session"]

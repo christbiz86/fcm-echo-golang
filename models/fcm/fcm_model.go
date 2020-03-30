@@ -27,8 +27,8 @@ func GetMdnCookie(r *http.Request) string {
 func GetAllFcm() []Gcms {
 	var gcmsList []Gcms
 	var gcms Gcms
-	db := db.CreateCon()
-	rows, err := db.Queryx("select * from gcms")
+	dbConn := db.CreateCon()
+	rows, err := dbConn.Queryx("select * from gcms")
 	if err != nil {
 		log.Printf("%v\n", err)
 	}
@@ -49,10 +49,10 @@ func RegisterFcm(c echo.Context) *Gcms {
 	if err := c.Bind(u); err != nil {
 		return nil
 	}
-	db := db.CreateCon()
+	dbConn := db.CreateCon()
 	sqlStatement1 := "SELECT mdn FROM gcms where mdn = ?"
 	//row := db.QueryRow(sqlStatement1, u.Mdn)
-	row := db.QueryRow(sqlStatement1, mdn)
+	row := dbConn.QueryRow(sqlStatement1, mdn)
 	switch err := row.Scan(&u.Mdn); err {
 		case sql.ErrNoRows:
 			InsetNewGcm(u)
@@ -63,13 +63,13 @@ func RegisterFcm(c echo.Context) *Gcms {
 }
 
 func InsetNewGcm(u *Gcms) {
-	db := db.CreateCon()
+	dbConn := db.CreateCon()
 	sqlStatement := "INSERT INTO gcms (mdn, reg_id,device_model,first_login)VALUES (?, ?, ?, ?)"
-	db.Queryx(sqlStatement, u.Mdn, u.Reg_id, u.Device_model, currentTime.Format("2006-01-02 15:04:05"))
+	dbConn.Queryx(sqlStatement, u.Mdn, u.Reg_id, u.Device_model, currentTime.Format("2006-01-02 15:04:05"))
 }
 
 func UpdateGcm(u *Gcms){
-	db := db.CreateCon()
+	dbConn := db.CreateCon()
 	sqlStatement := "UPDATE gcms set reg_id=?, device_model=?, last_login=? where MDN=?"
-	db.Queryx(sqlStatement, u.Reg_id, u.Device_model, currentTime.Format("2006-01-02 15:04:05"),u.Mdn)
+	dbConn.Queryx(sqlStatement, u.Reg_id, u.Device_model, currentTime.Format("2006-01-02 15:04:05"),u.Mdn)
 }
