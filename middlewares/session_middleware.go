@@ -33,7 +33,19 @@ func SessionMiddleware(next http.Handler) http.Handler{
 			}
 			http.SetCookie(w, &c)
 		} else {
-			http.Error(w, "Failed get MDN!!!", http.StatusUnauthorized)
+			//http.Error(w, "Failed get MDN!!!", http.StatusUnauthorized)
+			var jsonResult map[string]interface{}
+			jsonResult = make(map[string]interface{})
+			jsonResult["status"] = "0"
+			jsonResult["message"] = "Failed"
+			jsonResult["result"] = "Failed get MDN!!!"
+			js, err := json.Marshal(jsonResult)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(js)
 		}
 	})
 }
@@ -47,7 +59,10 @@ func Sfpas(sfpasUrl string, sessionData map[string]string, email string, passwd 
 	}
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(postData)
-	res, _ := http.Post(sfpasUrl, "application/json; charset=utf-8", b)
+	res, err := http.Post(sfpasUrl, "application/json; charset=utf-8", b)
+	if err != nil {
+		return nil
+	}
 	json.NewDecoder(res.Body).Decode(&responseData)
 	return responseData
 }
@@ -56,9 +71,13 @@ func GetSession(sessionId string) interface{} {
 	data := make(map[string]string)
 	data["session_id"] = sessionId
 	response := Sfpas(hosts, data, "", "")
-	if(response["error"].(float64) >= 400){
-		return nil
+	if response != nil {
+		if(response["error"].(float64) >= 400){
+			return nil
+		} else {
+			return response["session"]
+		}
 	} else {
-		return response["session"]
+		return nil
 	}
 }
