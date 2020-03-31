@@ -27,7 +27,7 @@ func RegisterFcm(c echo.Context) error {
 		return c.JSON(http.StatusCreated, jsonResult)
 	} else {
 		jsonResult["message"] = "Failed insert new data!"
-		return c.JSON(http.StatusCreated, jsonResult)
+		return c.JSON(http.StatusBadRequest, jsonResult)
 	}
 }
 
@@ -39,10 +39,10 @@ func GetFcmById(c echo.Context) error {
 	if result != nil {
 		jsonResult["message"] = "Data retrieve successfully!"
 		jsonResult["result"] = result
-		return c.JSON(http.StatusCreated, jsonResult)
+		return c.JSON(http.StatusOK, jsonResult)
 	} else {
 		jsonResult["message"] = "Failed retrieved row!"
-		return c.JSON(http.StatusCreated, jsonResult)
+		return c.JSON(http.StatusBadRequest, jsonResult)
 	}
 }
 
@@ -68,9 +68,9 @@ func DeleteFcm(c echo.Context) error{
 	if result != nil {
 		jsonResult["message"] = "Data deleted successfully!"
 		jsonResult["result"] = result
-		return c.JSON(http.StatusCreated, jsonResult)
+		return c.JSON(http.StatusOK, jsonResult)
 	} else {
 		jsonResult["message"] = "Failed deleted row!"
-		return c.JSON(http.StatusCreated, jsonResult)
+		return c.JSON(http.StatusBadRequest, jsonResult)
 	}
 }
