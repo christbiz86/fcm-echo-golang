@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 )
@@ -22,8 +21,6 @@ func SessionMiddleware(next http.Handler) http.Handler{
 		decoder := json.NewDecoder(r.Body)
 		decoder.Decode(&session_id)
 		getMdn := GetSession(session_id.Session_id)
-		log.Println("get mdn :")
-		log.Println(getMdn)
 		if getMdn != nil {
 			q := getMdn.(map[string]interface{})
 			ctx := context.WithValue(r.Context(), "sessionMdn", q["MDN"])

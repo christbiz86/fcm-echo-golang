@@ -3,6 +3,7 @@ package models
 import (
 	sql "database/sql"
 	"fcm-golang/db"
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
 	"log"
 	"net/http"
@@ -44,25 +45,44 @@ func GetAllFcm() []Gcms {
 
 func RegisterFcm(c echo.Context) *Gcms {
 	mdn := GetMdnCookie(c.Request())
-
 	u := new(Gcms)
 	if err := c.Bind(u); err != nil {
 		return nil
 	}
 	dbConn := db.CreateCon()
-	sqlStatement1 := "SELECT mdn FROM gcms where mdn = ?"
+	sqlStatement := "SELECT mdn FROM gcms where mdn = ?"
 	//row := db.QueryRow(sqlStatement1, u.Mdn)
-	row := dbConn.QueryRow(sqlStatement1, mdn)
+	row := dbConn.QueryRow(sqlStatement, mdn)
 	switch err := row.Scan(&u.Mdn); err {
 		case sql.ErrNoRows:
-			InsetNewGcm(u)
+			InsertNewGcm(u)
 		case nil:
 			UpdateGcm(u)
 	}
 	return u
 }
 
-func InsetNewGcm(u *Gcms) {
+func GetFcmById(c echo.Context) []Gcms{
+	mdn := c.Param("mdn")
+	var gcmsList []Gcms
+	var gcms Gcms
+	dbConn := db.CreateCon()
+	sqlStatement := "select * from gcms where MDN = ?"
+	rows, err := dbConn.Queryx(sqlStatement, mdn)
+	if err != nil {
+		log.Printf("%v\n", err)
+	}
+	for rows.Next() {
+		err := rows.StructScan(&gcms)
+		if err != nil {
+			log.Printf("%v\n", err)
+		}
+		gcmsList = append(gcmsList, gcms)
+	}
+	return gcmsList
+}
+
+func InsertNewGcm(u *Gcms) {
 	dbConn := db.CreateCon()
 	sqlStatement := "INSERT INTO gcms (mdn, reg_id,device_model,first_login)VALUES (?, ?, ?, ?)"
 	dbConn.Queryx(sqlStatement, u.Mdn, u.Reg_id, u.Device_model, currentTime.Format("2006-01-02 15:04:05"))
@@ -72,4 +92,15 @@ func UpdateGcm(u *Gcms){
 	dbConn := db.CreateCon()
 	sqlStatement := "UPDATE gcms set reg_id=?, device_model=?, last_login=? where MDN=?"
 	dbConn.Queryx(sqlStatement, u.Reg_id, u.Device_model, currentTime.Format("2006-01-02 15:04:05"),u.Mdn)
+}
+
+func DeleteGcm(c echo.Context) *sqlx.Rows {
+	mdn := c.Param("mdn")
+	dbConn := db.CreateCon()
+	sqlStatement := "DELETE FROM gcms where mdn = ?"
+	rows, err := dbConn.Queryx(sqlStatement, mdn)
+	if err != nil {
+		log.Printf("%v\n", err)
+	}
+	return rows
 }

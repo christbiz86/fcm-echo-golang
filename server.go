@@ -11,6 +11,8 @@ func main() {
 	e.Use(echo.WrapMiddleware(middlewares.SessionMiddleware))
 	e.GET("/fcm",controllers.GetFcm)
 	e.POST("/fcm", controllers.RegisterFcm)
+	e.GET("/fcm/:mdn", controllers.GetFcmById)
+	e.DELETE("/fcm/:mdn", controllers.DeleteFcm)
 	//e.DELETE("/fcm/:mdn", controllers.DeleteFcm)
 	//e.POST("/test",controllers.Test)
 	//e.POST("/fcm", func(c echo.Context) (err error) {

@@ -18,15 +18,31 @@ func GetFcm(c echo.Context) error {
 
 func RegisterFcm(c echo.Context) error {
 	result := models.RegisterFcm(c)
+	var jsonResult map[string]interface{}
+	jsonResult = make(map[string]interface{})
+	jsonResult["status"] = "1"
 	if result != nil {
-		var jsonResult map[string]interface{}
-		jsonResult = make(map[string]interface{})
-		jsonResult["status"] = "1"
 		jsonResult["message"] = "Data insert successfully!"
 		jsonResult["result"] = result
 		return c.JSON(http.StatusCreated, jsonResult)
 	} else {
-		return c.String(http.StatusOK, "Failed insert new data")
+		jsonResult["message"] = "Failed insert new data!"
+		return c.JSON(http.StatusCreated, jsonResult)
+	}
+}
+
+func GetFcmById(c echo.Context) error {
+	result := models.GetFcmById(c)
+	var jsonResult map[string]interface{}
+	jsonResult = make(map[string]interface{})
+	jsonResult["status"] = "1"
+	if result != nil {
+		jsonResult["message"] = "Data retrieve successfully!"
+		jsonResult["result"] = result
+		return c.JSON(http.StatusCreated, jsonResult)
+	} else {
+		jsonResult["message"] = "Failed retrieved row!"
+		return c.JSON(http.StatusCreated, jsonResult)
 	}
 }
 
@@ -44,7 +60,17 @@ func RegisterFcm(c echo.Context) error {
 //	return c.String(http.StatusOK, id+"Deleted")
 //}
 
-//
-//func UpdateFcm() error{
-//
-//}
+func DeleteFcm(c echo.Context) error{
+	result := models.DeleteGcm(c)
+	var jsonResult map[string]interface{}
+	jsonResult = make(map[string]interface{})
+	jsonResult["status"] = "1"
+	if result != nil {
+		jsonResult["message"] = "Data deleted successfully!"
+		jsonResult["result"] = result
+		return c.JSON(http.StatusCreated, jsonResult)
+	} else {
+		jsonResult["message"] = "Failed deleted row!"
+		return c.JSON(http.StatusCreated, jsonResult)
+	}
+}
