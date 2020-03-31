@@ -11,10 +11,10 @@ import (
 
 type Gcms struct {
 	Mdn         string `db:"MDN"`
-	RegId       string `json:"reg_id" form:"reg_id" query:"reg_id"`
-	DeviceModel string `json:"device_model" form:"device_model" query:"device_model"`
-	FirstLogin  string `json:"first_login" form:"first_login" query:"first_login"`
-	LastLogin   string `json:"last_login" form:"last_login" query:"last_login"`
+	Reg_id       string `json:"reg_id" form:"reg_id" query:"reg_id"`
+	Device_model string `json:"device_model" form:"device_model" query:"device_model"`
+	First_login  string `json:"first_login" form:"first_login" query:"first_login"`
+	Last_login   string `json:"last_login" form:"last_login" query:"last_login"`
 }
 
 var currentTime = time.Now()
@@ -65,11 +65,11 @@ func RegisterFcm(c echo.Context) *Gcms {
 func InsetNewGcm(u *Gcms) {
 	dbConn := db.CreateCon()
 	sqlStatement := "INSERT INTO gcms (mdn, reg_id,device_model,first_login)VALUES (?, ?, ?, ?)"
-	dbConn.Queryx(sqlStatement, u.Mdn, u.RegId, u.DeviceModel, currentTime.Format("2006-01-02 15:04:05"))
+	dbConn.Queryx(sqlStatement, u.Mdn, u.Reg_id, u.Device_model, currentTime.Format("2006-01-02 15:04:05"))
 }
 
 func UpdateGcm(u *Gcms){
 	dbConn := db.CreateCon()
 	sqlStatement := "UPDATE gcms set reg_id=?, device_model=?, last_login=? where MDN=?"
-	dbConn.Queryx(sqlStatement, u.RegId, u.DeviceModel, currentTime.Format("2006-01-02 15:04:05"),u.Mdn)
+	dbConn.Queryx(sqlStatement, u.Reg_id, u.Device_model, currentTime.Format("2006-01-02 15:04:05"),u.Mdn)
 }

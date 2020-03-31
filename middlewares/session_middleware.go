@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 )
@@ -12,15 +13,17 @@ var hosts = "http://10.1.35.36:8353/sfpas/session/validate"
 var responseData map[string]interface{}
 
 type Session struct {
-	SessionId string `json:session_id`
+	Session_id string `json:session_id`
 }
 
 func SessionMiddleware(next http.Handler) http.Handler{
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var SessionId Session
-		var decoder = json.NewDecoder(r.Body)
-		decoder.Decode(&SessionId)
-		getMdn := GetSession(SessionId.SessionId)
+		var session_id Session
+		decoder := json.NewDecoder(r.Body)
+		decoder.Decode(&session_id)
+		getMdn := GetSession(session_id.Session_id)
+		log.Println("get mdn :")
+		log.Println(getMdn)
 		if getMdn != nil {
 			q := getMdn.(map[string]interface{})
 			ctx := context.WithValue(r.Context(), "sessionMdn", q["MDN"])
